@@ -8,6 +8,8 @@ authors = ["Mihalis Papakonstantinou <mihalispapak@gmail.com>"]
 python = "^3.10"
 python-dotenv = "^1.0.0"
 requests = "^2.31.0"
+SQLAlchemy = "^2.0.25"
+shortuuid = "^1.0.11"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
