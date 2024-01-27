@@ -1,6 +1,7 @@
+import datetime
 from typing import List
 
-from sqlalchemy import orm, ForeignKey
+from sqlalchemy import orm, ForeignKey, String, DateTime
 from jira_analyzer.shared import model
 
 
@@ -18,3 +19,7 @@ class Task(model.ModelBase):
     project_id: orm.Mapped[str] = orm.mapped_column(ForeignKey("project.id"))
     project: orm.Mapped["Project"] = orm.relationship(back_populates="tasks")
 
+    task_status: orm.Mapped[str] = orm.mapped_column(String(64), nullable=True)
+
+    created_at: orm.Mapped[datetime.datetime] = orm.mapped_column(DateTime)
+    updated_at: orm.Mapped[datetime.datetime] = orm.mapped_column(DateTime, nullable=True)
