@@ -7,21 +7,23 @@ from typing import Optional, List
 from sqlalchemy import orm
 from sqlalchemy import Column, String
 
-from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.ext.declarative import declared_attr, declarative_base
+
+Base = declarative_base()
 
 
-class Base(orm.DeclarativeBase):
+class ModelBase(Base):
     """ORM model class, implementing prefixed uuids."""
 
     __abstract__ = True
 
-    # Ids are generated as a combination of prefix and shortuuid.
+    name: orm.Mapped[str] = orm.mapped_column(String(256))
+    external_id: orm.Mapped[str] = orm.mapped_column(String(256))
+    datasource: orm.Mapped[str] = orm.mapped_column(String(256))
+
     __id_prefix__: Optional[str] = None
 
-    # Model attributes making up the ID. If provided, the ID will be computed using the
-    # values of the provided attributes. This is useful in cases where the PK should
-    # remain stable given the same combination of values.
-    __id_constituents__: List[str] = []
+    __id_constituents__: List[str] = ["external_id", "datasource"]
 
     def __init__(self, *args, **kwargs):
         """Initialize the base model and set its ID (before writing to the database).
@@ -86,4 +88,3 @@ class Base(orm.DeclarativeBase):
         """
         cls.ensure_id_prefix()
         return Column(String(1024), primary_key=True)
-
