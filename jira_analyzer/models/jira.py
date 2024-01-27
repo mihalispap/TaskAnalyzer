@@ -1,18 +1,6 @@
-from sqlalchemy import String
-from sqlalchemy import orm
-
 from jira_analyzer.shared import model
 
 
-class JiraBase(model.Base):
-    __abstract__ = True
-
-    name: orm.Mapped[str] = orm.mapped_column(String(256))
-    jira_id: orm.Mapped[str] = orm.mapped_column(String(256))
-
-    __id_constituents__ = ["jira_id"]
-
-
-class Project(JiraBase):
+class Project(model.ModelBase):
     __tablename__ = "project"
     __id_prefix__ = "prj-"
