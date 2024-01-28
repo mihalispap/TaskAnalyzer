@@ -41,3 +41,21 @@ class TaskRepo(repos.BaseRepo[jira.Task]):
         return self.session.query(jira.Task).filter(
             and_(*filters)
         ).one_or_none()
+
+
+class AssigneeRepo(repos.BaseRepo[jira.Assignee]):
+    """Query repository for Assignees."""
+
+    def get_by_external_id_and_datasource(
+            self,
+            external_id: str,
+            datasource: str,
+    ) -> Optional[jira.Assignee]:
+        """Get an object on its id constituents"""
+        filters = [
+            jira.Assignee.external_id == external_id,
+            jira.Assignee.datasource == datasource,
+        ]
+        return self.session.query(jira.Assignee).filter(
+            and_(*filters)
+        ).one_or_none()
