@@ -1,4 +1,4 @@
-from jira_analyzer import settings
+from task_analyzer import settings
 from sqlalchemy import orm
 from sqlalchemy import create_engine
 

@@ -3,7 +3,7 @@ from typing import Generic, TypeVar, Optional
 from sqlalchemy import and_
 from sqlalchemy.orm.session import Session
 
-from jira_analyzer.shared import model
+from task_analyzer.shared import model
 
 T = TypeVar("T", bound=model.Base)
 

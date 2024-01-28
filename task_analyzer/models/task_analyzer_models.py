@@ -2,7 +2,7 @@ import datetime
 from typing import List
 
 from sqlalchemy import orm, ForeignKey, String, DateTime
-from jira_analyzer.shared import model
+from task_analyzer.shared import model
 
 
 class Project(model.ModelBase):
