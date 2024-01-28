@@ -1,7 +1,7 @@
 import pandas as pd
 
-from jira_analyzer.clients import jira
-from jira_analyzer.services import actions
+from task_analyzer.clients import jira
+from task_analyzer.services import actions
 
 jira_client = jira.JiraClient()
 for user in jira_client.get_users():

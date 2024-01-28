@@ -1,4 +1,4 @@
-from jira_analyzer import __version__
+from task_analyzer import __version__
 
 
 def test_version():

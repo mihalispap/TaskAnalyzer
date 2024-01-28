@@ -5,7 +5,7 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from jira_analyzer.shared import model
+from task_analyzer.shared import model
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -21,7 +21,7 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 # Auto-generate support.
-from jira_analyzer.models import jira  # noqa
+from task_analyzer.models import jira  # noqa
 
 target_metadata = model.Base.metadata
 

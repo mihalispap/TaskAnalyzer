@@ -4,7 +4,7 @@ import requests
 import json
 
 from requests import auth
-from jira_analyzer import settings
+from task_analyzer import settings
 
 
 class JiraClient:

@@ -1,17 +1,17 @@
 import datetime
 from typing import Optional
 
-from jira_analyzer.models import jira
+from task_analyzer.models import task_analyzer_models
 
-from jira_analyzer import db
-from jira_analyzer.repos import repos
+from task_analyzer import db
+from task_analyzer.repos import repos
 
 
 def create_or_update_project(
         external_id: str,
         datasource: str,
         name: str,
-) -> jira.Project:
+) -> task_analyzer_models.Project:
     is_new = False
     with db.session_scope() as session:
         repo = repos.ProjectRepo(session)
@@ -20,7 +20,7 @@ def create_or_update_project(
             datasource=datasource,
         )
         if not entity:
-            entity = jira.Project(
+            entity = task_analyzer_models.Project(
                 name=name,
                 external_id=external_id,
                 datasource=datasource,
@@ -40,7 +40,7 @@ def create_or_update_assignee(
         external_id: str,
         datasource: str,
         name: str,
-) -> jira.Project:
+) -> task_analyzer_models.Project:
     is_new = False
     with db.session_scope() as session:
         repo = repos.AssigneeRepo(session)
@@ -49,7 +49,7 @@ def create_or_update_assignee(
             datasource=datasource,
         )
         if not entity:
-            entity = jira.Assignee(
+            entity = task_analyzer_models.Assignee(
                 name=name,
                 external_id=external_id,
                 datasource=datasource,
@@ -74,7 +74,7 @@ def create_or_update_task(
         status: str,
         project_external_id: str,
         assignee_external_id: Optional[str] = None,
-) -> jira.Task:
+) -> task_analyzer_models.Task:
     is_new = False
     with db.session_scope() as session:
         project_repo = repos.ProjectRepo(session)
@@ -99,7 +99,7 @@ def create_or_update_task(
             datasource=datasource,
         )
         if not entity:
-            entity = jira.Task(
+            entity = task_analyzer_models.Task(
                 name=name,
                 external_id=external_id,
                 datasource=datasource,
