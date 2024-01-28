@@ -4,12 +4,12 @@ from jira_analyzer.clients import jira
 from jira_analyzer.services import actions
 
 jira_client = jira.JiraClient()
-# for user in jira_client.get_users():
-#     actions.create_or_update_assignee(
-#         external_id=user.get('accountId'),
-#         datasource=user.get('datasource'),
-#         name=user.get('displayName'),
-#     )
+for user in jira_client.get_users():
+    actions.create_or_update_assignee(
+        external_id=user.get('accountId'),
+        datasource=user.get('datasource'),
+        name=user.get('displayName'),
+    )
 
 for project in jira_client.get_projects():
     actions.create_or_update_project(
