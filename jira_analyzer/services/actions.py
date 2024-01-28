@@ -1,4 +1,5 @@
 import datetime
+from typing import Optional
 
 from jira_analyzer.models import jira
 
@@ -72,6 +73,7 @@ def create_or_update_task(
         updated_at: datetime.datetime,
         status: str,
         project_external_id: str,
+        assignee_external_id: Optional[str] = None,
 ) -> jira.Task:
     is_new = False
     with db.session_scope() as session:
@@ -82,6 +84,15 @@ def create_or_update_task(
         )
         if not project:
             raise ValueError(f"Project: {project_external_id} of {datasource} not found")
+
+        assignee = None
+        assignee_repo = repos.AssigneeRepo(session)
+        if assignee_external_id:
+            assignee = assignee_repo.get_by_external_id_and_datasource(
+                external_id=assignee_external_id,
+                datasource=datasource,
+            )
+
         repo = repos.TaskRepo(session)
         entity = repo.get_by_external_id_and_datasource(
             external_id=external_id,
@@ -101,6 +112,7 @@ def create_or_update_task(
         entity.updated_at = updated_at
         entity.task_status = status
         entity.project_id = project.id
+        entity.assignee_id = assignee.id if assignee else None
 
         if is_new:
             entity = repo.save(entity)
