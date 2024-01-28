@@ -40,6 +40,28 @@ class JiraClient:
 
         return projects
 
+    def get_users(self) -> List[Dict]:
+        offset = 0
+        users = []
+
+        while True:
+            url = f"{self._base_endpoint}/users/search?startAt={offset}"
+            response = requests.get(
+                url,
+                headers=self._headers,
+                auth=self._authenticate,
+            ).json()
+            offset += len(response)
+
+            users.extend([{
+                "datasource": self._datasource,
+                **val
+            } for val in response or []])
+            if not len(response):
+                break
+
+        return users
+
     def get_issues(self, project_id: Optional[str]) -> List[Dict]:
         # TODO: add optional param to fetch issues after a creation date
 
