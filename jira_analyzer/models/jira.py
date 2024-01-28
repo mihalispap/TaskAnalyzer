@@ -23,3 +23,13 @@ class Task(model.ModelBase):
 
     created_at: orm.Mapped[datetime.datetime] = orm.mapped_column(DateTime)
     updated_at: orm.Mapped[datetime.datetime] = orm.mapped_column(DateTime, nullable=True)
+
+    assignee_id: orm.Mapped[str] = orm.mapped_column(ForeignKey("assignee.id"), nullable=True)
+    assignee: orm.Mapped["Assignee"] = orm.relationship(back_populates="tasks")
+
+
+class Assignee(model.ModelBase):
+    __tablename__ = "assignee"
+    __id_prefix__ = "asg-"
+
+    tasks: orm.Mapped[List["Task"]] = orm.relationship(back_populates="assignee")
