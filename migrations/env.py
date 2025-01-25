@@ -21,7 +21,7 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 # Auto-generate support.
-from task_analyzer.models import jira  # noqa
+from task_analyzer.models import task_analyzer_models  # noqa
 
 target_metadata = model.Base.metadata
 
