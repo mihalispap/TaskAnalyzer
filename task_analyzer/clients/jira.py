@@ -18,6 +18,56 @@ class JiraClient:
     def _authenticate(self) -> auth.HTTPBasicAuth:
         return auth.HTTPBasicAuth(settings.JIRA_EMAIL, settings.JIRA_API_TOKEN)
 
+    def update_issue_status(
+            self,
+            issue_jira_id: str,
+            status_jira_id: str,
+    ):
+        url = f"{self._base_endpoint}/issue/{issue_jira_id}/transitions"
+        response = requests.get(
+            url,
+            headers=self._headers,
+            auth=self._authenticate,
+        ).json()
+
+        transition_id = None
+        for transition in response.get('transitions') or []:
+            if transition.get('to').get('id') == status_jira_id:
+                transition_id = transition.get('id')
+                break
+        response = requests.post(
+            url,
+            headers=self._headers,
+            auth=self._authenticate,
+            json={
+                "transition": {"id": transition_id}
+            }
+        )
+        print(response.status_code)
+        # pass
+
+    def get_statuses(self) -> List[Dict]:
+        offset = 0
+        statuses = []
+
+        while True:
+            url = f"{self._base_endpoint}/statuses/search"
+            response = requests.get(
+                url,
+                headers=self._headers,
+                auth=self._authenticate,
+            ).json()
+            offset += len(response.get("values"))
+
+            statuses.extend([{
+                "datasource": self._datasource,
+                **val
+            } for val in response.get("values") or []])
+            if response.get("isLast"):
+                break
+
+        return statuses
+
     def get_projects(self) -> List[Dict]:
         offset = 0
         projects = []
