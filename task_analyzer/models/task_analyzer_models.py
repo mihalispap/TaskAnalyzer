@@ -5,6 +5,13 @@ from sqlalchemy import orm, ForeignKey, String, DateTime
 from task_analyzer.shared import model
 
 
+class Status(model.ModelBase):
+    __tablename__ = "status"
+    __id_prefix__ = "stt-"
+
+    name: orm.Mapped[str] = orm.mapped_column(String(128))
+
+
 class Project(model.ModelBase):
     __tablename__ = "project"
     __id_prefix__ = "prj-"
