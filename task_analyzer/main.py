@@ -5,6 +5,14 @@ from task_analyzer.clients import jira
 from task_analyzer.services import actions
 
 jira_client = jira.JiraClient()
+
+for status in jira_client.get_statuses():
+    actions.create_or_update_status(
+        external_id=status.get('id'),
+        datasource=status.get('datasource'),
+        name=status.get('name'),
+    )
+
 for user in jira_client.get_users():
     actions.create_or_update_user(
         external_id=user.get('accountId'),
