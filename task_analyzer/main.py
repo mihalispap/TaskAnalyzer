@@ -21,8 +21,6 @@ for project in jira_client.get_projects():
     )
 
     for issue in jira_client.get_issues(project_id=project.get('id')):
-        if not 'call/progress' in issue.get('fields').get('summary'):
-            continue
 
         assignee_id = None
         if (issue.get('fields') or {}).get('assignee'):
