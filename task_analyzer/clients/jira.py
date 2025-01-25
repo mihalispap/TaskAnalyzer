@@ -35,7 +35,7 @@ class JiraClient:
             if transition.get('to').get('id') == status_jira_id:
                 transition_id = transition.get('id')
                 break
-        response = requests.post(
+        requests.post(
             url,
             headers=self._headers,
             auth=self._authenticate,
@@ -43,8 +43,6 @@ class JiraClient:
                 "transition": {"id": transition_id}
             }
         )
-        print(response.status_code)
-        # pass
 
     def get_statuses(self) -> List[Dict]:
         offset = 0
