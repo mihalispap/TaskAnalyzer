@@ -20,10 +20,11 @@ class ModelBase(Base):
     name: orm.Mapped[str] = orm.mapped_column(String(256))
     external_id: orm.Mapped[str] = orm.mapped_column(String(256))
     datasource: orm.Mapped[str] = orm.mapped_column(String(256))
+    slug: orm.Mapped[str] = orm.mapped_column(String(256))
 
     __id_prefix__: Optional[str] = None
 
-    __id_constituents__: List[str] = ["external_id", "datasource"]
+    __id_constituents__: List[str] = ["external_id", "datasource", "slug"]
 
     def __init__(self, *args, **kwargs):
         """Initialize the base model and set its ID (before writing to the database).
