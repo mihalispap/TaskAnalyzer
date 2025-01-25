@@ -15,6 +15,7 @@ def _generate_unique_entity_slug(
             Type[task_analyzer_models.User],
             Type[task_analyzer_models.Project],
             Type[task_analyzer_models.Task],
+            Type[task_analyzer_models.Status],
         ],
 ) -> str:
     for _ in range(0, settings.SLUG_GENERATION_RETRIES):
@@ -34,6 +35,7 @@ def get_entity_by_slug(
             Type[task_analyzer_models.User],
             Type[task_analyzer_models.Project],
             Type[task_analyzer_models.Task],
+            Type[task_analyzer_models.Status],
         ],
 ) -> Optional[Union[task_analyzer_models.User]]:
     """Get an entity by its slug.
@@ -55,9 +57,41 @@ def get_entity_by_slug(
                 repo = repos.ProjectRepo(session)
             case task_analyzer_models.Task:
                 repo = repos.TaskRepo(session)
+            case task_analyzer_models.Status:
+                repo = repos.StatusRepo(session)
             case _:
                 raise NotImplementedError(f"Slug entity fetch for {type(entity)} not implemented.")
         return repo.get_by_slug(slug)
+
+
+def create_or_update_status(
+        external_id: str,
+        datasource: str,
+        name: str,
+) -> task_analyzer_models.Status:
+    is_new = False
+    with db.session_scope() as session:
+        repo = repos.StatusRepo(session)
+        entity = repo.get_by_external_id_and_datasource(
+            external_id=external_id,
+            datasource=datasource,
+        )
+        if not entity:
+            entity = task_analyzer_models.Status(
+                name=name,
+                external_id=external_id,
+                datasource=datasource,
+                slug=_generate_unique_entity_slug(task_analyzer_models.Status),
+            )
+            is_new = True
+        entity.name = name
+        entity.external_id = external_id
+        entity.datasource = datasource
+
+        if is_new:
+            entity = repo.save(entity)
+
+    return entity
 
 
 def create_or_update_project(
