@@ -1,5 +1,5 @@
 import datetime
-from typing import Optional, Union, Type
+from typing import Optional, Union, Type, List
 
 from unique_names_generator import get_random_name  # type: ignore # noqa
 from unique_names_generator.data import ADJECTIVES, ANIMALS, NAMES  # type: ignore # noqa
@@ -129,7 +129,7 @@ def create_or_update_user(
         name: str,
         external_id: Optional[str] = None,
         email: Optional[str] = None,
-        _session = None,
+        _session=None,
 ) -> task_analyzer_models.User:
     is_new = False
     with db.session_scope(_session) as session:
@@ -236,3 +236,12 @@ def create_or_update_task(
             entity = repo.save(entity)
 
     return entity
+
+
+def find_issues_by_status_and_existent_dependency(
+        status: str,
+        _session=None,
+) -> List[task_analyzer_models.Task]:
+    with db.session_scope(_session) as session:
+        repo = repos.TaskRepo(session)
+        return repo.get_by_status_and_existent_dependency(status=status)
