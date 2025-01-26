@@ -45,3 +45,4 @@ class User(model.ModelBase):
     __id_prefix__ = "usr-"
 
     email: orm.Mapped[str] = orm.mapped_column(String(256), nullable=True)
+    gid: orm.Mapped[str] = orm.mapped_column(String(128), nullable=True)
