@@ -36,6 +36,16 @@ class TaskRepo(repos.BaseRepo[task_analyzer_models.Task]):
     """Query repository for Tasks."""
     _type = task_analyzer_models.Task
 
+    def get_by_status_and_existent_dependency(self, status: str) -> List[task_analyzer_models.Task]:
+        """Get an object on its status having a dependency"""
+        filters = [
+            task_analyzer_models.Task.task_status == status,
+            task_analyzer_models.Task.external_dependency_id != None,
+        ]
+        return self.session.query(task_analyzer_models.Task).filter(
+            and_(*filters)
+        ).all()
+
     # TODO: remove
     def get_by_external_id_and_datasource(
             self,
