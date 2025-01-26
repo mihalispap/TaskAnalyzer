@@ -32,3 +32,10 @@ JIRA_EXTERNAL_DEPENDENCY_FIELD_ID = os.getenv("JIRA_EXTERNAL_DEPENDENCY_FIELD_ID
 METABASE_DOMAIN = os.getenv("METABASE_DOMAIN", None)
 METABASE_USERNAME = os.getenv("METABASE_USERNAME", None)
 METABASE_PASSWORD = os.getenv("METABASE_PASSWORD", None)
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Google Chat
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+GOOGLE_CHAT_SPACE_ID = os.getenv("GOOGLE_CHAT_SPACE_ID", None)
+GOOGLE_CHAT_WEBHOOK_ID = os.getenv("GOOGLE_CHAT_WEBHOOK_ID", None)
