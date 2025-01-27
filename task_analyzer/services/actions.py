@@ -16,6 +16,7 @@ def _generate_unique_entity_slug(
             Type[task_analyzer_models.Project],
             Type[task_analyzer_models.Task],
             Type[task_analyzer_models.Status],
+            Type[task_analyzer_models.Label],
         ],
 ) -> str:
     for _ in range(0, settings.SLUG_GENERATION_RETRIES):
@@ -36,6 +37,7 @@ def get_entity_by_slug(
             Type[task_analyzer_models.Project],
             Type[task_analyzer_models.Task],
             Type[task_analyzer_models.Status],
+            Type[task_analyzer_models.Label],
         ],
 ) -> Optional[Union[task_analyzer_models.User]]:
     """Get an entity by its slug.
@@ -59,9 +61,45 @@ def get_entity_by_slug(
                 repo = repos.TaskRepo(session)
             case task_analyzer_models.Status:
                 repo = repos.StatusRepo(session)
+            case task_analyzer_models.Label:
+                repo = repos.LabelRepo(session)
             case _:
                 raise NotImplementedError(f"Slug entity fetch for {type(entity)} not implemented.")
         return repo.get_by_slug(slug)
+
+
+def create_or_update_label(
+        datasource: str,
+        name: str,
+        _session=None,
+        external_id: Optional[str] = None,
+) -> task_analyzer_models.Label:
+    is_new = False
+    with db.session_scope(_session) as session:
+        repo = repos.LabelRepo(session)
+
+        if not external_id:
+            external_id = _generate_unique_entity_slug(task_analyzer_models.Label)
+        entity = repo.get_by_name_and_datasource(
+            name=name,
+            datasource=datasource,
+        )
+        if not entity:
+            entity = task_analyzer_models.Label(
+                name=name,
+                external_id=external_id,
+                datasource=datasource,
+                slug=_generate_unique_entity_slug(task_analyzer_models.Label),
+            )
+            is_new = True
+        entity.name = name
+        entity.external_id = external_id
+        entity.datasource = datasource
+
+        if is_new:
+            entity = repo.save(entity)
+
+    return entity
 
 
 def create_or_update_status(
@@ -178,6 +216,7 @@ def create_or_update_task(
         project_external_id: str,
         assignee_external_id: Optional[str] = None,
         external_dependency_email: Optional[str] = None,
+        labels: Optional[List[str]] = None,
 ) -> task_analyzer_models.Task:
     is_new = False
     with db.session_scope() as session:
@@ -209,6 +248,14 @@ def create_or_update_task(
             )
             external_dependency_id = external_dependency.id if external_dependency else None
 
+        label_entities = [
+            create_or_update_label(
+                name=label,
+                datasource=datasource,
+                _session=session)
+            for label in labels
+        ]
+
         repo = repos.TaskRepo(session)
         entity = repo.get_by_external_id_and_datasource(
             external_id=external_id,
@@ -231,6 +278,7 @@ def create_or_update_task(
         entity.project_id = project_id
         entity.assignee_id = assignee_id if assignee_id else None
         entity.external_dependency_id = external_dependency_id if external_dependency_id else None
+        entity.associate_labels(label_entities)
 
         if is_new:
             entity = repo.save(entity)
