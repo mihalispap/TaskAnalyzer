@@ -33,6 +33,24 @@ for project in jira_client.get_projects():
         if (issue.get('fields') or {}).get('assignee'):
             assignee_id = issue.get('fields').get('assignee').get('accountId')
 
+        # TODO: support multiple sprints
+        sprint = None
+        if issue.get('fields'):
+            jira_sprint = issue.get('fields').get(settings.JIRA_SPRINT_FIELD_ID)[0] \
+                if (issue.get('fields').get(settings.JIRA_SPRINT_FIELD_ID) and
+                    len(issue.get('fields').get(settings.JIRA_SPRINT_FIELD_ID))) \
+                else None
+
+            if jira_sprint:
+                sprint = {
+                    'datasource': 'JIRA',
+                    'starts_at': pd.to_datetime(jira_sprint.get('startDate')),
+                    'ends_at': pd.to_datetime(jira_sprint.get('endDate')),
+                    'name': jira_sprint.get('name'),
+                    'external_id': f"{jira_sprint.get('id')}_"
+                                   f"{jira_sprint.get('boardId')}",
+                }
+
         actions.create_or_update_task(
             external_id=issue.get('id'),
             datasource=issue.get('datasource'),
@@ -44,4 +62,6 @@ for project in jira_client.get_projects():
             assignee_external_id=assignee_id,
             external_dependency_email=(issue.get('fields') or {}).get(settings.JIRA_EXTERNAL_DEPENDENCY_FIELD_ID),
             labels=(issue.get('fields') or {}).get('labels') or [],
+            story_points=(issue.get('fields') or {}).get(settings.JIRA_STORY_POINT_FIELD_ID),
+            sprint=sprint,
         )
