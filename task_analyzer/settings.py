@@ -25,6 +25,7 @@ JIRA_DOMAIN = os.getenv("JIRA_DOMAIN", None)
 JIRA_EMAIL = os.getenv("JIRA_EMAIL", None)
 JIRA_EXTERNAL_DEPENDENCY_FIELD_ID = os.getenv("JIRA_EXTERNAL_DEPENDENCY_FIELD_ID", None)
 JIRA_STORY_POINT_FIELD_ID = os.getenv("JIRA_STORY_POINT_FIELD_ID", None)
+JIRA_SPRINT_FIELD_ID = os.getenv("JIRA_SPRINT_FIELD_ID", None)
 JIRA_TARGET_STATUS_ID = os.getenv("JIRA_TARGET_STATUS_ID", None)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
