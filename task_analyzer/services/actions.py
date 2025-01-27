@@ -1,5 +1,5 @@
 import datetime
-from typing import Optional, Union, Type, List
+from typing import Optional, Union, Type, List, Dict
 
 from unique_names_generator import get_random_name  # type: ignore # noqa
 from unique_names_generator.data import ADJECTIVES, ANIMALS, NAMES  # type: ignore # noqa
@@ -17,6 +17,7 @@ def _generate_unique_entity_slug(
             Type[task_analyzer_models.Task],
             Type[task_analyzer_models.Status],
             Type[task_analyzer_models.Label],
+            Type[task_analyzer_models.Sprint],
         ],
 ) -> str:
     for _ in range(0, settings.SLUG_GENERATION_RETRIES):
@@ -38,6 +39,7 @@ def get_entity_by_slug(
             Type[task_analyzer_models.Task],
             Type[task_analyzer_models.Status],
             Type[task_analyzer_models.Label],
+            Type[task_analyzer_models.Sprint],
         ],
 ) -> Optional[Union[task_analyzer_models.User]]:
     """Get an entity by its slug.
@@ -63,9 +65,49 @@ def get_entity_by_slug(
                 repo = repos.StatusRepo(session)
             case task_analyzer_models.Label:
                 repo = repos.LabelRepo(session)
+            case task_analyzer_models.Sprint:
+                repo = repos.SprintRepo(session)
             case _:
                 raise NotImplementedError(f"Slug entity fetch for {type(entity)} not implemented.")
         return repo.get_by_slug(slug)
+
+
+def create_or_update_sprint(
+        datasource: str,
+        name: str,
+        external_id: str,
+        starts_at: Optional[datetime.datetime] = None,
+        ends_at: Optional[datetime.datetime] = None,
+        _session=None,
+) -> task_analyzer_models.Sprint:
+    is_new = False
+    with db.session_scope(_session) as session:
+        repo = repos.SprintRepo(session)
+
+        if not external_id:
+            external_id = _generate_unique_entity_slug(task_analyzer_models.Sprint)
+        entity = repo.get_by_external_id_and_datasource(
+            external_id=external_id,
+            datasource=datasource,
+        )
+        if not entity:
+            entity = task_analyzer_models.Sprint(
+                name=name,
+                external_id=external_id,
+                datasource=datasource,
+                slug=_generate_unique_entity_slug(task_analyzer_models.Label),
+            )
+            is_new = True
+        entity.name = name
+        entity.external_id = external_id
+        entity.datasource = datasource
+        entity.starts_at = starts_at
+        entity.ends_at = ends_at
+
+        if is_new:
+            entity = repo.save(entity)
+
+    return entity
 
 
 def create_or_update_label(
@@ -218,6 +260,7 @@ def create_or_update_task(
         external_dependency_email: Optional[str] = None,
         labels: Optional[List[str]] = None,
         story_points: Optional[float] = None,
+        sprint: Optional[Dict] = None,
 ) -> task_analyzer_models.Task:
     is_new = False
     with db.session_scope() as session:
@@ -257,6 +300,14 @@ def create_or_update_task(
             for label in labels
         ]
 
+        sprint_id = None
+        if sprint:
+            sprint_entity = create_or_update_sprint(
+                _session=session,
+                **sprint,
+            )
+            sprint_id = sprint_entity.id
+
         repo = repos.TaskRepo(session)
         entity = repo.get_by_external_id_and_datasource(
             external_id=external_id,
@@ -277,6 +328,7 @@ def create_or_update_task(
         entity.updated_at = updated_at
         entity.task_status = status
         entity.project_id = project_id
+        entity.sprint_id = sprint_id
         entity.assignee_id = assignee_id if assignee_id else None
         entity.external_dependency_id = external_dependency_id if external_dependency_id else None
         entity.story_points = story_points
