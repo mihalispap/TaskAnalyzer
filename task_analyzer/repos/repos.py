@@ -6,6 +6,11 @@ from task_analyzer.models import task_analyzer_models
 from task_analyzer.shared import repos
 
 
+class SprintRepo(repos.BaseRepo[task_analyzer_models.Sprint]):
+    """Query repository for Sprints."""
+    _type = task_analyzer_models.Sprint
+
+
 class LabelRepo(repos.BaseRepo[task_analyzer_models.Label]):
     """Query repository for Labels."""
     _type = task_analyzer_models.Label
