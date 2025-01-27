@@ -1,8 +1,18 @@
 import datetime
 from typing import List
 
-from sqlalchemy import orm, ForeignKey, String, DateTime
+from sqlalchemy import orm, ForeignKey, String, DateTime, Table, Column
 from task_analyzer.shared import model
+
+task_labels = Table('task_labels', model.ModelBase.metadata,
+                    Column('task_id', ForeignKey('task.id', ondelete="CASCADE"), index=True),
+                    Column('label_id', ForeignKey('label.id', ondelete="CASCADE"), index=True)
+                    )
+
+
+class Label(model.ModelBase):
+    __tablename__ = "label"
+    __id_prefix__ = "lbl-"
 
 
 class Status(model.ModelBase):
@@ -38,6 +48,8 @@ class Task(model.ModelBase):
     external_dependency: orm.Mapped["User"] = orm.relationship(
         foreign_keys=[external_dependency_id],
     )
+
+    labels = orm.relationship('Label', secondary=task_labels)
 
 
 class User(model.ModelBase):
