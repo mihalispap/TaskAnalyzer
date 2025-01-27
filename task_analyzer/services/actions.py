@@ -217,6 +217,7 @@ def create_or_update_task(
         assignee_external_id: Optional[str] = None,
         external_dependency_email: Optional[str] = None,
         labels: Optional[List[str]] = None,
+        story_points: Optional[float] = None,
 ) -> task_analyzer_models.Task:
     is_new = False
     with db.session_scope() as session:
@@ -278,6 +279,7 @@ def create_or_update_task(
         entity.project_id = project_id
         entity.assignee_id = assignee_id if assignee_id else None
         entity.external_dependency_id = external_dependency_id if external_dependency_id else None
+        entity.story_points = story_points
         entity.associate_labels(label_entities)
 
         if is_new:
