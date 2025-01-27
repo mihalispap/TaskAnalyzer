@@ -1,7 +1,7 @@
 import datetime
 from typing import List
 
-from sqlalchemy import orm, ForeignKey, String, DateTime, Table, Column
+from sqlalchemy import orm, ForeignKey, String, DateTime, Table, Column, Float
 from task_analyzer.shared import model
 
 task_labels = Table('task_labels', model.ModelBase.metadata,
@@ -37,6 +37,7 @@ class Task(model.ModelBase):
     project: orm.Mapped["Project"] = orm.relationship(back_populates="tasks")
 
     task_status: orm.Mapped[str] = orm.mapped_column(String(64), nullable=True)
+    story_points: orm.Mapped[float] = orm.mapped_column(Float, nullable=True)
 
     created_at: orm.Mapped[datetime.datetime] = orm.mapped_column(DateTime)
     updated_at: orm.Mapped[datetime.datetime] = orm.mapped_column(DateTime, nullable=True)
