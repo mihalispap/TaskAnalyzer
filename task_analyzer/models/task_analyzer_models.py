@@ -51,6 +51,18 @@ class Task(model.ModelBase):
 
     labels = orm.relationship('Label', secondary=task_labels)
 
+    def associate_labels(self, labels: List[Label]):
+        self.labels = []
+        for label in labels:
+            if not any(
+                    [
+                        l
+                        for l in self.labels
+                        if l.id == label.id
+                    ]
+            ):
+                self.labels.append(label)
+
 
 class User(model.ModelBase):
     __tablename__ = "user"
