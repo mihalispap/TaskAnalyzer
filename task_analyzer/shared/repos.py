@@ -21,6 +21,20 @@ class BaseRepo(Generic[T]):
         """Get an object on its id"""
         return self.session.query(T).get(id_)
 
+    def get_by_name_and_datasource(
+            self,
+            name: str,
+            datasource: str,
+    ) -> Optional[T]:
+        """Get an object on its name & datasource"""
+        filters = [
+            self._type.name == name,
+            self._type.datasource == datasource,
+        ]
+        return self.session.query(self._type).filter(
+            and_(*filters)
+        ).one_or_none()
+
     def get_by_external_id_and_datasource(
             self,
             external_id: str,
