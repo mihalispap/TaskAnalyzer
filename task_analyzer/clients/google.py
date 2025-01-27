@@ -24,9 +24,9 @@ class GoogleClient:
         if requested_user_id and tagged_user_id:
             tagged = (f"<users/{tagged_user_id}>, <users/{requested_user_id}> wants to ask you about: {content}."
                       f"Do you have any questions? You can always ask them at the upcoming buffer :)")
-        if requested_user_id:
+        elif requested_user_id:
             tagged = f"<users/{requested_user_id}>, {content}."
-        if tagged_user_id:
+        elif tagged_user_id:
             tagged = f"<users/{tagged_user_id}>, {content}."
 
         message = {
