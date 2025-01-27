@@ -10,6 +10,15 @@ task_labels = Table('task_labels', model.ModelBase.metadata,
                     )
 
 
+class Sprint(model.ModelBase):
+    __tablename__ = "sprint"
+    __id_prefix__ = "spr-"
+
+    starts_at: orm.Mapped[datetime.datetime] = orm.mapped_column(DateTime, nullable=True)
+    ends_at: orm.Mapped[datetime.datetime] = orm.mapped_column(DateTime, nullable=True)
+    tasks: orm.Mapped[List["Task"]] = orm.relationship(back_populates="sprint")
+
+
 class Label(model.ModelBase):
     __tablename__ = "label"
     __id_prefix__ = "lbl-"
@@ -35,6 +44,9 @@ class Task(model.ModelBase):
 
     project_id: orm.Mapped[str] = orm.mapped_column(ForeignKey("project.id"))
     project: orm.Mapped["Project"] = orm.relationship(back_populates="tasks")
+
+    sprint_id: orm.Mapped[str] = orm.mapped_column(ForeignKey("sprint.id"), nullable=True)
+    sprint: orm.Mapped["Sprint"] = orm.relationship(back_populates="tasks")
 
     task_status: orm.Mapped[str] = orm.mapped_column(String(64), nullable=True)
     story_points: orm.Mapped[float] = orm.mapped_column(Float, nullable=True)
