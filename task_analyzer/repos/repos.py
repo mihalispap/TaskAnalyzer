@@ -55,6 +55,16 @@ class TaskRepo(repos.BaseRepo[task_analyzer_models.Task]):
             and_(*filters)
         ).all()
 
+    def get_by_status_and_label(self, status: str, label: str) -> List[task_analyzer_models.Task]:
+        """Get an object on its status and label"""
+        filters = [
+            task_analyzer_models.Task.task_status == status,
+            task_analyzer_models.Task.labels.any(task_analyzer_models.Label.name.in_([label])),
+        ]
+        return self.session.query(task_analyzer_models.Task).filter(
+            and_(*filters)
+        ).all()
+
     # TODO: remove
     def get_by_external_id_and_datasource(
             self,
