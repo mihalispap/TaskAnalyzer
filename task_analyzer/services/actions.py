@@ -347,3 +347,13 @@ def find_issues_by_status_and_existent_dependency(
     with db.session_scope(_session) as session:
         repo = repos.TaskRepo(session)
         return repo.get_by_status_and_existent_dependency(status=status)
+
+
+def find_issues_by_status_and_label(
+        status: str,
+        label: str,
+        _session=None,
+) -> List[task_analyzer_models.Task]:
+    with db.session_scope(_session) as session:
+        repo = repos.TaskRepo(session)
+        return repo.get_by_status_and_label(status=status, label=label)
